@@ -21,5 +21,7 @@ import userRouter from "./routes/user.routes.js";
 app.use("/api/v1/users", userRouter);
 import imageRouter from "./routes/image.routes.js";
 app.use("/api/v1/images", imageRouter);
+import { errorHandler } from "./middlewares/errorHandler.middleware.js";
+app.use(errorHandler);
 
 export { app };

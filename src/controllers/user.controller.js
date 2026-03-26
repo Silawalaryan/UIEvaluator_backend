@@ -75,6 +75,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  const guestId = req.headers["x-guest-id"];
   if (!email) {
     throw new ApiError(403, "Email is required");
   }
@@ -89,6 +90,23 @@ const loginUser = asyncHandler(async (req, res) => {
   const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
     user._id
   );
+  if (guestId) {
+    const guestUser = await User.findOne({ guestId, isGuest: true });
+
+    if (guestUser) {
+      // move all images linked to guest user to logged in user
+      await Image.updateMany(
+        { uploadedBy: guestUser._id },
+        {
+          $set: {
+            uploadedBy: user._id,
+          },
+        }
+      );
+      // delete guest user
+      await User.findByIdAndDelete(guestUser._id);
+    }
+  }
   const options = {
     httpOnly: true,
     secure: true,

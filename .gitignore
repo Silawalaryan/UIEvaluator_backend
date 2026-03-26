@@ -118,3 +118,6 @@ dist
 .pnp.*
 
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Node
+ml_service/venv/
+ml_service/__pycache__/
+*.pyc
